@@ -74,7 +74,6 @@
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        // 設定値（ここを実際のIDに書き換えてください）
         const LIFF_ID_SAKI = "2009743237-PSUSnXEr"; 
         const LIFF_ID_RYOUHEI = "2009743237-8Pin4IP2";
 
@@ -116,19 +115,18 @@
         function initializeLiff() {
             const statusDisp = document.getElementById('status');
 
-            // どちらか一方のIDで初期化（どちらのIDを使っても共通のGASに飛びます）
-            liff.init({ liffId: LIFF_ID_SAKI })
+            liff.init({ liffId: LIFF_ID_RYOUHEI })
                 .then(() => {
                     const currentId = liff.id; // 今開いているLIFFのIDを取得
                     const payerSelect = document.getElementById('payerSelect');
 
                     // IDによる自動判定
-                    if (currentId === LIFF_ID_RYOUHEI) {
-                        payerSelect.value = "Ryouhei";
-                        statusDisp.innerText = "Ryouheiモードで起動しました";
-                    } else {
+                    if (currentId === LIFF_ID_SAKI ) {
                         payerSelect.value = "Saki";
                         statusDisp.innerText = "Sakiモードで起動しました";
+                    } else {
+                        payerSelect.value = "Ryouhei";
+                        statusDisp.innerText = "Ryouheiモードで起動しました";
                     }
                 })
                 .catch((err) => {
