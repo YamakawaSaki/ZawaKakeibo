@@ -151,20 +151,26 @@
                 payer: form.payer.value
             };
 
-            google.script.run
-                .withSuccessHandler((response) => {
-                    alert(response);
-                    button.disabled = false;
-                    button.innerText = '保存する';
-                    form.amount.value = '';
-                    form.memo.value = '';
-                })
-                .withFailureHandler((err) => {
-                    alert('エラー: ' + err);
-                    button.disabled = false;
-                    button.innerText = '保存する';
-                })
-                .processForm(formData);
+            const gasurl = "https://script.google.com/macros/s/AKfycbw_xNBn6xv7Z4Q3fbV_fo81e2-cs-I1qbhZ6JdopBrVFvRnB_zJvBofaQwCKvOS2YxY/exec";
+            
+
+            fetch(gasUrl, {
+                method: "POST",
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+                button.disabled = false;
+                button.innerText = '保存する';
+                form.amount.value = '';
+                form.memo.value = '';
+            })
+            .catch(err => {
+                alert("通信エラー: " + err);
+                button.disabled = false;
+                button.innerText = '保存する';
+            });
         }
     </script>
 </body>
