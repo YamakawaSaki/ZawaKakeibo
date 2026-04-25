@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-    <div id="status">準備中...</div>
+    <div id="status">システム起動中...</div>
 
     <div class="type-selector">
         <div id="type-expense" class="type-option active" onclick="switchType('支出')">支出</div>
@@ -58,7 +58,7 @@
             <label>金額</label>
             <input type="number" name="amount" placeholder="1000" required>
         </div>
-        <div class="form-group">
+        <div class="form-group)
             <label>内容</label>
             <input type="text" name="memo" placeholder="スーパーなど">
         </div>
@@ -104,19 +104,18 @@
             });
         }
 
-        // 初期化処理
-        document.addEventListener('DOMContentLoaded', function() {
+        // 初期設定とLIFF起動を確実に
+        window.onload = function() {
             document.getElementById('date').value = new Date().toISOString().substring(0, 10);
             switchType('支出');
-            
             initializeLiff();
-        });
+        };
 
         function initializeLiff() {
             var statusDisp = document.getElementById('status');
             var currentUrl = window.location.href;
             
-            // 2. 初期化に使用するIDを判定
+            // 判定ロジック
             var targetId = LIFF_ID_SAKI;
             if (currentUrl.indexOf(LIFF_ID_RYOUHEI) !== -1) {
                 targetId = LIFF_ID_RYOUHEI;
@@ -124,14 +123,10 @@
         
             statusDisp.innerText = "初期化開始(" + (targetId === LIFF_ID_SAKI ? "Saki" : "Ryouhei") + ")...";
         
-            // 3. awaitを使わず、.then()で繋ぐ（スマホブラウザでのフリーズ対策）
             liff.init({ liffId: targetId }).then(function() {
-                statusDisp.innerText = "初期化成功";
-                
                 var finalId = liff.id;
                 var payerSelect = document.getElementById('payerSelect');
         
-                // 4. 最終的なIDで表示を切り替え
                 if (finalId === LIFF_ID_RYOUHEI) {
                     payerSelect.value = "Ryouhei";
                     statusDisp.innerText = "Ryouheiモードで起動中";
@@ -140,9 +135,7 @@
                     statusDisp.innerText = "Sakiモードで起動中";
                 }
             }).catch(function(err) {
-                // エラーが出た場合はアラートと画面に表示
-                statusDisp.innerText = "エラー: " + err.message;
-                alert("LIFF Init Error: " + err.message);
+                statusDisp.innerText = "初期化失敗: " + err.message;
             });
         }
 
@@ -160,8 +153,8 @@
                 payer: form.payer.value
             };
 
-            const gasurl = "https://script.google.com/macros/s/AKfycbw_xNBn6xv7Z4Q3fbV_fo81e2-cs-I1qbhZ6JdopBrVFvRnB_zJvBofaQwCKvOS2YxY/exec";
-            
+            // 【修正箇所】変数名を一致させました
+            const gasUrl = "https://script.google.com/macros/s/AKfycbw_xNBn6xv7Z4Q3fbV_fo81e2-cs-I1qbhZ6JdopBrVFvRnB_zJvBofaQwCKvOS2YxY/exec";
 
             fetch(gasUrl, {
                 method: "POST",
