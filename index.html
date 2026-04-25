@@ -113,38 +113,37 @@
         });
 
         function initializeLiff() {
-            const statusDisp = document.getElementById('status');
-
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const currentUrl = window.location.href;
+            var statusDisp = document.getElementById('status');
+            var currentUrl = window.location.href;
+            
+            // 2. 初期化に使用するIDを判定
+            var targetId = LIFF_ID_SAKI;
+            if (currentUrl.indexOf(LIFF_ID_RYOUHEI) !== -1) {
+                targetId = LIFF_ID_RYOUHEI;
+            }
         
-                // 初期化（IDを動的に切り替える）
-                let targetId = LIFF_ID_SAKI;
-                if (currentUrl.includes(LIFF_ID_RYOUHEI)) {
-                    targetId = LIFF_ID_RYOUHEI;
-                }
+            statusDisp.innerText = "初期化開始(" + (targetId === LIFF_ID_SAKI ? "Saki" : "Ryouhei") + ")...";
         
-                await liff.init({ liffId: targetId });
+            // 3. awaitを使わず、.then()で繋ぐ（スマホブラウザでのフリーズ対策）
+            liff.init({ liffId: targetId }).then(function() {
+                statusDisp.innerText = "初期化成功";
+                
+                var finalId = liff.id;
+                var payerSelect = document.getElementById('payerSelect');
         
-                // 初期化後の確定IDを取得
-                const finalId = liff.id;
-                const payerSelect = document.getElementById('payerSelect');
-        
-                // 判定ロジックをより厳密に
+                // 4. 最終的なIDで表示を切り替え
                 if (finalId === LIFF_ID_RYOUHEI) {
                     payerSelect.value = "Ryouhei";
-                    statusDisp.innerText = "Ryouheiモードで起動しました";
+                    statusDisp.innerText = "Ryouheiモードで起動中";
                 } else {
                     payerSelect.value = "Saki";
-                    statusDisp.innerText = "Sakiモードで起動しました";
+                    statusDisp.innerText = "Sakiモードで起動中";
                 }
-        
-            } catch (err) {
-                statusDisp.innerText = "初期化エラー: " + err.message;
-                // エラーの詳細を出す（デバッグ用）
-                console.error("LIFF Init Error:", err);
-            }
+            }).catch(function(err) {
+                // エラーが出た場合はアラートと画面に表示
+                statusDisp.innerText = "エラー: " + err.message;
+                alert("LIFF Init Error: " + err.message);
+            });
         }
 
         function submitForm() {
