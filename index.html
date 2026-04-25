@@ -58,7 +58,7 @@
             <label>金額</label>
             <input type="number" name="amount" placeholder="1000" required>
         </div>
-        <div class="form-group)
+        <div class="form-group">
             <label>内容</label>
             <input type="text" name="memo" placeholder="スーパーなど">
         </div>
@@ -74,8 +74,8 @@
 
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        const LIFF_ID_SAKI = "2009743237-PSUSnXEr"; 
-        const LIFF_ID_RYOUHEI = "2009743237-8Pin4IP2";
+        // SakiさんのIDだけで固定します
+        const MY_LIFF_ID = "2009743237-PSUSnXEr";
 
         const categories = {
           '支出': ['食費', '日用品', '家賃', '電気ガス', '水道', '通信費', '貯金', 'その他（支出）'],
@@ -104,40 +104,23 @@
             });
         }
 
-        // 初期設定とLIFF起動を確実に
+        // 起動時処理
         window.onload = function() {
             document.getElementById('date').value = new Date().toISOString().substring(0, 10);
             switchType('支出');
-            initializeLiff();
-        };
 
-        function initializeLiff() {
             var statusDisp = document.getElementById('status');
-            var currentUrl = window.location.href;
-            
-            // 判定ロジック
-            var targetId = LIFF_ID_SAKI;
-            if (currentUrl.indexOf(LIFF_ID_RYOUHEI) !== -1) {
-                targetId = LIFF_ID_RYOUHEI;
-            }
-        
-            statusDisp.innerText = "初期化開始(" + (targetId === LIFF_ID_SAKI ? "Saki" : "Ryouhei") + ")...";
-        
-            liff.init({ liffId: targetId }).then(function() {
-                var finalId = liff.id;
-                var payerSelect = document.getElementById('payerSelect');
-        
-                if (finalId === LIFF_ID_RYOUHEI) {
-                    payerSelect.value = "Ryouhei";
-                    statusDisp.innerText = "Ryouheiモードで起動中";
-                } else {
-                    payerSelect.value = "Saki";
-                    statusDisp.innerText = "Sakiモードで起動中";
-                }
-            }).catch(function(err) {
-                statusDisp.innerText = "初期化失敗: " + err.message;
-            });
-        }
+            statusDisp.innerText = "LIFF初期化中...";
+
+            // ID判定を入れず、直接初期化
+            liff.init({ liffId: MY_LIFF_ID })
+                .then(function() {
+                    statusDisp.innerText = "起動完了";
+                })
+                .catch(function(err) {
+                    statusDisp.innerText = "エラー: " + err.message;
+                });
+        };
 
         function submitForm() {
             const form = document.getElementById('expenseForm');
@@ -153,23 +136,22 @@
                 payer: form.payer.value
             };
 
-            // 【修正箇所】変数名を一致させました
             const gasUrl = "https://script.google.com/macros/s/AKfycbw_xNBn6xv7Z4Q3fbV_fo81e2-cs-I1qbhZ6JdopBrVFvRnB_zJvBofaQwCKvOS2YxY/exec";
 
             fetch(gasUrl, {
                 method: "POST",
+                mode: "no-cors", // GASへのfetchを安定させるため追加
                 body: JSON.stringify(formData)
             })
-            .then(response => response.text())
-            .then(result => {
-                alert(result);
+            .then(() => {
+                alert("保存リクエストを送信しました！");
                 button.disabled = false;
                 button.innerText = '保存する';
                 form.amount.value = '';
                 form.memo.value = '';
             })
             .catch(err => {
-                alert("通信エラー: " + err);
+                alert("エラー: " + err);
                 button.disabled = false;
                 button.innerText = '保存する';
             });
